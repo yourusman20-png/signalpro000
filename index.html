@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURE SIGNAL PRO | Institutional Grade Trading</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #020202;
+            --neon-blue: #00e5ff;
+            --neon-green: #00ff88;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-gradient: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+
+        /* --- BACKGROUND LAYER SYSTEM --- */
+        .bg-system {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #020202 100%);
+        }
+
+        .mesh-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            filter: blur(100px);
+            opacity: 0.4;
+        }
+
+        .mesh-orb {
+            position: absolute;
+            border-radius: 50%;
+            animation: moveOrb 20s infinite alternate ease-in-out;
+        }
+
+        .orb-1 { width: 600px; height: 600px; background: var(--neon-blue); top: -200px; left: -100px; animation-delay: 0s; }
+        .orb-2 { width: 500px; height: 500px; background: var(--neon-green); bottom: -150px; right: -100px; animation-delay: -5s; }
+        .orb-3 { width: 400px; height: 400px; background: #4a00e0; top: 40%; left: 30%; animation-delay: -10s; }
+
+        @keyframes moveOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 100px) scale(1.2); }
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--neon-blue), transparent);
+            opacity: 0.1;
+            transform: rotate(35deg);
+            animation: beamSweep 15s infinite linear;
+        }
+
+        @keyframes beamSweep {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        canvas#particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- TOP TICKER --- */
+        .ticker-wrap {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .ticker {
+            display: flex;
+            white-space: nowrap;
+            animation: tickerFlow 30s linear infinite;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+
+        .price-up { color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,136,0.3); }
+        .price-down { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
+
+        @keyframes tickerFlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 60vw;
+            height: 20vw;
+            background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            animation: pulseGlow 8s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0.8; }
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 18vw, 15rem);
+            font-weight: 900;
+            line-height: 0.85;
+            letter-spacing: -0.05em;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff 40%, rgba(255,255,255,0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            animation: cinematicEntrance 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .hero h1::after {
+            content: "SURE SIGNAL PRO";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            animation: shimmer 4s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes cinematicEntrance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- JOIN BUTTON (EXTREME) --- */
+        .btn-container {
+            margin-top: 40px;
+            perspective: 1000px;
+            animation: fadeUp 1s 0.8s both;
+        }
+
+        .join-btn {
+            position: relative;
+            padding: 28px 70px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: linear-gradient(270deg, var(--neon-blue), var(--neon-green), var(--neon-blue));
+            background-size: 200% 200%;
+            animation: liquidBg 3s ease infinite, btnFloat 3s ease-in-out infinite;
+            box-shadow: 0 10px 40px -10px var(--neon-blue);
+            transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1), box-shadow 0.3s;
+            transform-style: preserve-3d;
+        }
+
+        .join-btn::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            background: var(--accent-gradient);
+            filter: blur(20px);
+            opacity: 0.4;
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+
+        .join-btn:hover {
+            transform: scale(1.08) translateY(-5px);
+            box-shadow: 0 20px 60px -5px var(--neon-blue);
+        }
+
+        @keyframes liquidBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes btnFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* --- CARDS SECTION --- */
+        .cards-section {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px 100px 20px;
+            margin-top: -80px; /* Closer to hero */
+            z-index: 30;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 420px;
+            height: 240px;
+            background: var(--glass);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s ease;
+            transform-style: preserve-3d;
+            animation: fadeUp 1s 1.2s both;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--accent-gradient);
+            transform: translateX(-100%);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover::before {
+            transform: translateX(0);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--neon-blue);
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .card-icon {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 8rem;
+            opacity: 0.05;
+            font-weight: 900;
+            font-style: italic;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- FOOTER --- */
+        .disclaimer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: fadeIn 3s 2s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .cards-section { margin-top: 20px; }
+            .card { width: 100%; height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <div class="bg-system">
+        <div class="mesh-container">
+            <div class="mesh-orb orb-1"></div>
+            <div class="mesh-orb orb-2"></div>
+            <div class="mesh-orb orb-3"></div>
+        </div>
+        <div class="light-beam" style="top: 10%; animation-duration: 12s;"></div>
+        <div class="light-beam" style="top: 50%; animation-duration: 18s; animation-delay: -5s;"></div>
+    </div>
+
+    <canvas id="particles"></canvas>
+
+    <div class="ticker-wrap">
+        <div class="ticker" id="ticker">
+            <!-- Ticker items injected via JS -->
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-glow"></div>
+        <h1>SURE SIGNAL PRO</h1>
+        <div class="btn-container" id="magnetic-area">
+            <button class="join-btn" id="joinBtn">Join Private Access</button>
+        </div>
+    </section>
+
+    <section class="cards-section">
+        <div class="card" data-tilt>
+            <h3>Real-Time Market Signals</h3>
+            <p>Institutional grade algorithmic analysis processed via our low-latency global edge network. Experience 99.9% signal accuracy.</p>
+            <div class="card-icon">RT</div>
+        </div>
+        <div class="card" data-tilt>
+            <h3>Advanced Risk Management</h3>
+            <p>Our proprietary dynamic hedging models protect your capital during high-volatility events. Institutional security for elite traders.</p>
+            <div class="card-icon">RM</div>
+        </div>
+    </section>
+
+    <footer class="disclaimer">
+        Trading involve significant risk. Sure Signal Pro is an institutional tool for professional traders. Past performance is not indicative of future results. © 2024 Sure Signal Pro.
+    </footer>
+
+    <script>
+        // --- TICKER DATA ---
+        const tickers = [
+            { pair: 'BTC/USD', price: '64,231.50', change: '+2.45%' },
+            { pair: 'ETH/USD', price: '3,452.12', change: '-1.12%' },
+            { pair: 'XAU/USD', price: '2,314.10', change: '+0.85%' },
+            { pair: 'EUR/USD', price: '1.0842', change: '+0.12%' },
+            { pair: 'SPY', price: '512.20', change: '+1.05%' },
+            { pair: 'NDX', price: '18,210.45', change: '+1.42%' }
+        ];
+
+        const tickerEl = document.getElementById('ticker');
+        const tickerContent = [...tickers, ...tickers, ...tickers].map(item => `
+            <div class="ticker-item">
+                <span>${item.pair}</span>
+                <span style="color: white; margin: 0 10px;">${item.price}</span>
+                <span class="${item.change.startsWith('+') ? 'price-up' : 'price-down'}">${item.change}</span>
+            </div>
+        `).join('');
+        tickerEl.innerHTML = tickerContent;
+
+        // --- PARTICLE SYSTEM ---
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.init();
+            }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 229, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- MAGNETIC BUTTON ---
+        const btn = document.getElementById('joinBtn');
+        const magneticArea = document.getElementById('magnetic-area');
+
+        magneticArea.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.08)`;
+        });
+
+        magneticArea.addEventListener('mouseleave', () => {
+            btn.style.transform = `translate(0px, 0px) scale(1)`;
+        });
+
+        btn.addEventListener('click', function(e) {
+            let ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            this.appendChild(ripple);
+            let x = e.clientX - e.target.offsetLeft;
+            let y = e.clientY - e.target.offsetTop;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        // --- 3D TILT CARDS ---
+        const cards = document.querySelectorAll('[data-tilt]');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                card.style.boxShadow = `${-rotateY * 2}px ${rotateX * 2}px 30px rgba(0,229,255,0.15)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                card.style.boxShadow = `none`;
+            });
+        });
+
+        // --- REVEAL ANIMATION ---
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        cards.forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
